@@ -138,5 +138,80 @@ export default function ({ db, ensurePfp }) {
     res.redirect('/profile')
   })
 
+  // Liste toutes les promesses faites par l'utilisateur, groupées par propriétaire (owner)
+  router.get('/pledges', verifyAuth(), async (req, res) => {
+    try {
+      const docs = await db.allDocs({ include_docs: true })
+      const groups = {}
+
+      for (const row of docs.rows) {
+        const owner = row.doc._id
+        const wishlist = row.doc.wishlist || []
+        for (const item of wishlist) {
+          if (item.pledgedBy === req.user._id) {
+            const pledge = {
+              owner,
+              id: item.id,
+              name: item.name || (item.url ? item.url : ''),
+              price: item.price,
+              image: item.image,
+              url: item.url,
+              note: item.note,
+              addedBy: item.addedBy,
+              purchased: !!item.purchased,
+            }
+
+            if (!groups[owner]) groups[owner] = []
+            groups[owner].push(pledge)
+          }
+        }
+      }
+
+      const pledgesByOwner = Object.keys(groups)
+        .sort((a, b) => a.localeCompare(b))
+        .map((owner) => ({ owner, pledges: groups[owner] }))
+
+      res.render('pledges', {
+        title: _CC.lang('NAVBAR_PLEDGES'),
+        pledgesByOwner,
+      })
+    } catch (err) {
+      req.flash('error', `${err}`)
+      res.redirect('/profile')
+    }
+  })
+
+  // Basculer l'état "acheté" d'une promesse (seul le pledgeur peut le faire)
+  router.post(
+    '/pledges/:owner/:itemId/purchased',
+    verifyAuth(),
+    async (req, res) => {
+      try {
+        const owner = req.params.owner
+        const itemId = req.params.itemId
+
+        const wishlist = await _CC.wishlistManager.get(owner)
+        const item = await wishlist.get(itemId)
+
+        // Seul celui qui a promis peut marquer comme acheté
+        if (item.pledgedBy !== req.user._id) {
+          throw new Error('Vous n\'avez pas promis cet article')
+        }
+
+        item.purchased = !item.purchased
+        await wishlist.save()
+
+        req.flash(
+          'success',
+          item.purchased ? 'Marqué comme acheté' : 'Marqué comme non-acheté',
+        )
+      } catch (err) {
+        req.flash('error', `${err}`)
+      }
+
+      res.redirect('/profile/pledges')
+    },
+  )
+
   return router
 }
