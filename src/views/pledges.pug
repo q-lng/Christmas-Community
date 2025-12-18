@@ -1,0 +1,53 @@
+extends layout.pug
+
+block content
+  h1.title #{title}
+
+  if _CC.config.customHtml.pledges
+    div!= _CC.config.customHtml.pledges
+
+  if !pledgesByOwner || pledgesByOwner.length === 0
+    .box
+      p Vous n'avez encore rien promis.
+  else
+    each group in pledgesByOwner
+      .box
+        .columns.is-mobile.is-vcentered
+          .column
+            h2.title.is-5
+              a(href=`${_CC.config.base}wishlist/${group.owner}`, style='color: inherit;') #{group.owner}
+              span.has-text-grey-light &nbsp;·&nbsp; #{group.pledges.length} item(s)
+        each p in group.pledges
+          .box(style='margin-bottom: 0.5rem;')
+            .columns.is-vcentered
+              if p.image
+                .column.is-narrow
+                  a(href=p.url || `${_CC.config.base}wishlist/${p.owner}`, target='_blank')
+                    figure.image.is-64x64
+                      img(src=p.image, alt=p.name)
+              .column
+                h3.subtitle.is-6
+                  if p.url
+                    a(href=p.url, target='_blank', rel='noopener') #{p.name}
+                  else
+                    span #{p.name}
+                if p.price
+                  p.has-text-grey-light Prix: #{p.price}
+                if p.note
+                  p.has-text-grey-light Note: #{p.note}
+                p.has-text-grey-light
+                  strong Ajouté par:
+                  |  #{p.addedBy}
+                p.has-text-grey-light
+                  strong Statut:
+                  if p.purchased
+                    span.has-text-success &nbsp;Acheté
+                  else
+                    span.has-text-warning &nbsp;Promis / Pas encore acheté
+              .column.is-narrow
+                form(action=`${_CC.config.base}profile/pledges/${p.owner}/${p.id}/purchased`, method='POST')
+                  button.button(type='submit', class=(p.purchased ? 'is-danger' : 'is-success'))
+                    if p.purchased
+                      | Annuler l'achat
+                    else
+                      | Marquer comme acheté
