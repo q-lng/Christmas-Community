@@ -110,6 +110,7 @@ export const strings = {
   NAVBAR_LOGOUT: 'Log Out',
   NAVBAR_PROFILE: 'Profile',
   NAVBAR_WISHLIST: 'My Wishlist',
+  NAVBAR_PLEDGES: "My Pledges",
   NOTE_BACK: (name) => `Back to ${name}'s wishlist`,
   NOTE_GET_PRODUCT_DATA: 'Get Product Data',
   NOTE_GUARD: 'Invalid user',
