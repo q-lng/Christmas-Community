@@ -120,6 +120,7 @@ export const strings = {
   NAVBAR_LOGOUT: 'Deconnexion',
   NAVBAR_PROFILE: 'Profil',
   NAVBAR_WISHLIST: "Ma liste d'envies",
+  NAVBAR_PLEDGES: "Mes promesses",
   NOTE_BACK: (name) => `Retour à la liste d'envie de ${name}`,
   NOTE_GET_PRODUCT_DATA: 'Obtenir des données sur le produit',
   NOTE_GUARD: 'Utilisateur invalide',
