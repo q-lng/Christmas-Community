@@ -8,6 +8,11 @@
 
 Web app for your family's Christmas shopping
 
+## About this fork
+
+This fork has been created for the goal of adding a "Pledges" page with all the pledges you did on each list, and being able to tick a pledge as "received", "done" or whatever we can say.
+This is now working but still WIP to make it fit perfectly in the original Christmas Community project. :)
+
 ## Purpose
 
 To create a simple place for your entire family to use to find gifts that people want, and to avoid double-gifting.
